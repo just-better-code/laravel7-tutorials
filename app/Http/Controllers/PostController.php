@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class PostController extends ModelController
 {
-    /** @var array 'method' => 'policy'*/
+    /** @var  array 'method' => 'policy'*/
     protected $guardedMethods = [
         'export' => 'export',
         'import' => 'import',
