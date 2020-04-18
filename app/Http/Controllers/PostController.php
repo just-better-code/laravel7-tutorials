@@ -23,16 +23,10 @@ class PostController extends ModelController
     public function index()
     { /** Не имеет экземпляра модели */ }
 
-    public function create()
-    { /** Не имеет экземпляра модели */ }
-
     public function store(Request $request)
     { /** Имеет экземпляр модели */ }
 
     public function show(Post $post)
-    { /** Имеет экземпляр модели */ }
-
-    public function edit(Post $post)
     { /** Имеет экземпляр модели */ }
 
     public function update(Request $request, Post $post)
