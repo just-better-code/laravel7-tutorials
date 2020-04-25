@@ -9,18 +9,23 @@ class UsersSeeder extends Seeder
 
     public function run()
     {
-        $user = User::create([
+        /** @var User $user */
+        $user = factory(User::class)->create(
+            [
                 'email' => 'user@habr.local',
                 'password' => 'password',
             ]
         );
 
-        $admin = User::create([
+        /** @var User $admin */
+        $admin = factory(User::class)->create(
+            [
                 'email' => 'admin@habr.local',
                 'password' => 'password',
             ]
         );
-//        $user->assignRole('user');
-//        $admin->assignRole('admin');
+
+        $user->assignRole('user');
+        $admin->assignRole('admin');
     }
 }

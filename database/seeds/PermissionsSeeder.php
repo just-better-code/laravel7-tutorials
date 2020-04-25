@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -33,12 +34,14 @@ class PermissionsSeeder extends Seeder
     {
         foreach ($modelPermissions as $model => $perms) {
             $buildedPerms = collect($perms)->crossJoin($model)
-                ->map(function ($item) {
-                    $perm = implode('-', $item); //view-post
-                    Permission::findOrCreate($perm, 'api');
+                ->map(
+                    function ($item) {
+                        $perm = implode('-', $item); //view-post
+                        Permission::findOrCreate($perm, 'api');
 
-                    return $perm;
-                })->toArray();
+                        return $perm;
+                    }
+                )->toArray();
 
             $role->givePermissionTo($buildedPerms);
         }

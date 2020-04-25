@@ -21,16 +21,24 @@ class PostController extends ModelController
     }
 
     public function index()
-    { /** Не имеет экземпляра модели */ }
+    {
+        return $this->getModelClass()::all();
+    }
 
     public function store(Request $request)
     { /** Имеет экземпляр модели */ }
 
     public function show(Post $post)
-    { /** Имеет экземпляр модели */ }
+    {
+        return $post;
+    }
 
     public function update(Request $request, Post $post)
-    { /** Имеет экземпляр модели */ }
+    {
+        $post->fill($request->all())->saveOrFail();
+
+        return $post->refresh();
+    }
 
     public function destroy(Post $post)
     { /** Имеет экземпляр модели */ }
