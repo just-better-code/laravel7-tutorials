@@ -10,6 +10,5 @@ $factory->define(
     return [
         'title' => $faker->sentence(3),
         'description' => $faker->sentence(8),
-        'author' => $faker->name,
     ];
 });

@@ -10,11 +10,15 @@ return [
             'delete',
             'import',
             'export',
+            'update-attr-user_id',
+            'view-attr-user_id',
+            'view-attr-user',
         ],
     ],
     'user' => [
         'App\\Models\\Post' => [
             'view',
+            'update-self',
             'view-any',
         ],
     ],

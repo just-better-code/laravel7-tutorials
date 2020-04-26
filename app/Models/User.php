@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Extensions\Traits\GuardedModel;
 use App\Extensions\Traits\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,6 +14,7 @@ class User extends Authenticatable implements JWTSubject
     use Notifiable;
     use HasRoles;
     use HasApiTokens;
+    use GuardedModel;
 
     protected $guard_name = 'api';
 
@@ -27,6 +29,16 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    protected function authView(): array
+    {
+        return ['email_verified_at'];
+    }
 
     public function setPasswordAttribute($value)
     {

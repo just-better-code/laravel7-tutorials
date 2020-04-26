@@ -19,7 +19,15 @@ abstract class ModelPolicy
 
     public function view(User $user, Model $model)
     {
-        return $user->can('view-' . $this->getModelClass());
+        if ($user->can('view-' . $this->getModelClass())) {
+            return true;
+        }
+
+        if ($user->can('view-self-' . $this->getModelClass())) {
+            return $this->isOwner($user, $model);
+        }
+
+        return false;
     }
 
     public function create(User $user)
@@ -29,11 +37,36 @@ abstract class ModelPolicy
 
     public function update(User $user, Model $model)
     {
-        return $user->can('update-' . $this->getModelClass());
+        if ($user->can('update-' . $this->getModelClass())) {
+            return true;
+        }
+
+        if ($user->can('update-self-' . $this->getModelClass())) {
+            return $this->isOwner($user, $model);
+        }
+
+        return false;
     }
 
     public function delete(User $user, Model $model)
     {
-        return $user->can('delete-' . $this->getModelClass());
+        if ($user->can('delete-' . $this->getModelClass())) {
+            return true;
+        }
+
+        if ($user->can('delete-self-' . $this->getModelClass())) {
+            return $this->isOwner($user, $model);
+        }
+
+        return false;
+    }
+
+    private function isOwner(User $user, Model $model): bool
+    {
+        if (!empty($user) && method_exists($model, 'user')) {
+            return $user->getKey() === $model->getRelation('user')->getKey();
+        }
+
+        return false;
     }
 }
