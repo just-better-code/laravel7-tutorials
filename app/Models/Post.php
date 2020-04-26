@@ -9,17 +9,24 @@ class Post extends Model
 {
     use GuardedModel;
 
+    protected $hidden = ['id'];
+
+    protected $guarded = ['created_at', 'updated_at'];
+
+    protected $fillable = ['title', 'description', 'user_id'];
+
     protected function authView(): array
     {
-        return [
-            'author',
-        ];
+        return ['user_id', 'user'];
     }
 
     protected function authUpdate(): array
     {
-        return [
-            'created_at',
-        ];
+        return ['user_id', 'user'];
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

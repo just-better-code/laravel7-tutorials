@@ -22,26 +22,35 @@ class PostController extends ModelController
 
     public function index()
     {
-        return $this->getModelClass()::all();
+        return Post::all();
     }
 
     public function store(Request $request)
-    { /** Имеет экземпляр модели */ }
+    {
+        $post = new Post();
+        $post->fill($request->all())->saveOrFail();
+
+        return $post->refresh();
+    }
 
     public function show(Post $post)
     {
-        return $post;
+        return $post->fresh('user');
     }
 
     public function update(Request $request, Post $post)
     {
         $post->fill($request->all())->saveOrFail();
 
-        return $post->refresh();
+        return $post->fresh('user');
     }
 
     public function destroy(Post $post)
-    { /** Имеет экземпляр модели */ }
+    {
+        $post->delete();
+
+        return response()->noContent();
+    }
 
     public function import()
     { /** Не имеет экземпляра модели */ }

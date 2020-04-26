@@ -20,73 +20,65 @@ trait GuardedModel
 
     public function getHidden(): array
     {
-        $baseHidden = parent::getHidden();
+        $this->filterVisibility();
 
-        $authHidden = array_filter($this->authView(), function ($attr) {
-            return $this->userCanViewAttribute($attr);
-        });
-
-        return array_merge($baseHidden, $authHidden);
+        return parent::getHidden();
     }
 
-    public function getGuarded(): array
+    public function getVisible(): array
     {
-        $this->clearGuarded();
-        $baseGuarded = parent::getGuarded();
+        $this->filterVisibility();
 
-        $authGuarded = array_filter($this->authUpdate(), function ($attr) {
-            return $this->userCanUpdateAttribute($attr);
-        });
-
-        return array_merge($baseGuarded, $authGuarded);
+        return parent::getVisible();
     }
 
-    private function clearGuarded()
+    public function isFillable($key)
     {
-        if (in_array('*', $this->guarded) && !empty($this->authUpdate())) {
-            $this->guard([]);
-        }
-    }
-
-    public function getAttribute($key)
-    {
-        if (!$this->userCanViewAttribute($key)) {
-            return null;
+        if (in_array($key, $this->authView())) {
+            return $this->userCanUpdateAttribute($key);
         }
 
-        return parent::getAttribute($key);
+        return parent::isFillable($key);
     }
 
-    public function setAttribute($key, $value)
+    private function filterVisibility(): void
     {
-        if (!$this->userCanUpdateAttribute($key)) {
-            return $this;
-        }
+        $this->makeHidden($this->authView());
 
-        return parent::setAttribute($key, $value);
+        $authVisible = array_filter(
+            $this->authView(),
+            fn ($attr) => $this->userCanViewAttribute($attr)
+        );
+
+        $this->makeVisible($authVisible);
     }
 
-    private function userCanViewAttribute(string $attribute): bool
+    private function userCanViewAttribute(string $key): bool
     {
-        if (!in_array($attribute, $this->authView())) {
-            return true;
-        }
-
         /** @var User $user */
         $user = auth()->user();
+        $ability = !empty($user) && $user->can("view-attr-$key-" . static::class);
 
-        return $user->can("view-attr-$attribute-" . self::class);
+        return $ability;
     }
 
-    private function userCanUpdateAttribute(string $attribute): bool
+    private function userCanUpdateAttribute(string $key): bool
     {
-        if (!in_array($attribute, $this->authUpdate())) {
-            return true;
-        }
-
         /** @var User $user */
         $user = auth()->user();
+        $ability = !empty($user) && $user->can("update-attr-$key-" . static::class);
 
-        return $user->can("update-attr-$attribute-" . self::class);
+        return $ability;
+    }
+
+    public function totallyGuarded()
+    {
+        $guarded = (
+            count($this->getFillable()) === 0
+            && count($this->authView()) === 0
+            && $this->getGuarded() == ['*']
+        );
+
+        return  $guarded;
     }
 }
